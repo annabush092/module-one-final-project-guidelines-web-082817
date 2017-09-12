@@ -1,7 +1,22 @@
 require_relative '../config/environment'
 
-game = Game.create
-game.reset_community_points_and_round
-game.create_player_roster
+ActiveRecord::Base.logger = nil
+
+# game = Game.create
+# game.create_player_roster
+#
+5.times do
+  Game.last.players.each do |player|
+    Turn.run_turn({action_id: Action.create.id, player_id: player.id})
+    break if Game.last.check_win_conditions
+  end
+  break if Game.last.check_win_conditions
+  #can this be prettier?
+end
+
+puts "Congratulations! You've won!"
+
 
 binding.pry
+
+"k bye"

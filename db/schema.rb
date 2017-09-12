@@ -10,10 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170911214451) do
+ActiveRecord::Schema.define(version: 20170912173055) do
 
   create_table "actions", force: :cascade do |t|
-    t.string "type"
+    t.string "action_type"
   end
 
   create_table "events", force: :cascade do |t|
@@ -28,8 +28,8 @@ ActiveRecord::Schema.define(version: 20170911214451) do
 
   create_table "players", force: :cascade do |t|
     t.string  "name"
-    t.integer "knowledge"
-    t.integer "social"
+    t.integer "technical_skills"
+    t.integer "soft_skills"
     t.integer "wellbeing"
     t.integer "game_id"
   end

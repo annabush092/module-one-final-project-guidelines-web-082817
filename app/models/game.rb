@@ -3,11 +3,10 @@ class Game < ActiveRecord::Base
   has_many :events
   has_many :turns, through: :players
 
-  def reset_community_points_and_round
+  def initialize(attribute_hash)
+    super
     self.community_points = 0
     self.round = 1
-    self.save
-    self
   end
 
   def get_players_from_user
@@ -32,20 +31,23 @@ class Game < ActiveRecord::Base
   end
 
 
-  # def display_dashboard
-  #   puts ""
-  #   Player.all.each do |player|
-  #     puts "Name: #{player.name} ** Knowledge: #{player.knowledge} ** Social: #{player.social} ** Wellbeing: #{player.wellbeing}"
-  #   end
-  # end
+  def display_dashboard
+    puts ""
+    puts "********************************************************************"
+    self.players.each do |player|
+      print "Name: #{player.name} ** "
+      print "Technical skills: #{player.technical_skills} ** "
+      print "Soft skills: #{player.soft_skills} ** "
+      puts "Wellbeing: #{player.wellbeing}"
+    end
+    puts "********************************************************************"
+  end
 
-
-
-    # Welcome/Goodbye
-    # Print dashboard
-    # Print instructions
-    # Get input
-    # Check victory conditions
+  def check_win_conditions
+    self.players.all? do |player|
+      player.technical_skills >= 10 && player.soft_skills >= 10
+    end
+  end
 
 
 end
