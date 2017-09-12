@@ -8,7 +8,6 @@ class Turn < ActiveRecord::Base
     Turn.last.display_actions_to_user
     Turn.last.player.choose_action
     Turn.last.action.occurs
-    Turn.last.display_results
   end
 
   def display_actions_to_user
