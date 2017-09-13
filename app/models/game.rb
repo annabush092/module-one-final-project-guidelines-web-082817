@@ -1,13 +1,8 @@
 class Game < ActiveRecord::Base
   has_many :players
-  has_many :events
+  has_many :rounds
+  has_many :events, through: :rounds
   has_many :turns, through: :players
-
-  def initialize(attribute_hash)
-    super
-    self.community_points = 0
-    self.round = 1
-  end
 
   def get_players_from_user
     #private method used in create_player_roster
@@ -33,42 +28,65 @@ class Game < ActiveRecord::Base
     end
   end
 
-
   def display_dashboard
     puts ""
-    puts "********************************************************************"
+    puts "*************************************************************************"
     self.players.each do |player|
       print "Name: #{player.name} ** "
       print "Technical skills: #{player.technical_skills} ** "
       print "Soft skills: #{player.soft_skills} ** "
       puts "Wellbeing: #{player.wellbeing}"
     end
-    puts "********************************************************************"
+    puts "*************************************************************************"
     puts ""
   end
 
-  def check_win_conditions
-    #Game.last because otherwise we only see instances that haven't been updated
-    Game.last.players.all? do |player|
-      player.technical_skills >= 10 && player.soft_skills >= 10
+  def self.new_game?
+    puts "Would you like to start a new game? y/n"
+    response = gets.chomp
+    if response == "n"
+      puts "Thank you for playing!"
+      exit
+    elsif response == "y"
+    else
+      puts "I don't understand what you put."
+      self.new_game?
     end
   end
 
-  def play_game
-    #loop through rounds
-    while self.round <=5
-      puts "******* ROUND #{self.round} *******"
-      #iterate through each player's turns
-      self.players.each do |player|
-        Turn.run_turn({action_id: Action.create.id, player_id: player.id})
-        break if self.check_win_conditions
-      end
-      self.increment!(:round, by = 1)
-      break if self.check_win_conditions
+  def self.save_game?
+    puts "Would you like to save your game? y/n"
+    response = gets.chomp
+    if response == "n"
+      puts "No problem, it's been erased from the universe."
+      Game.last.destroy
+    elsif response == "y"
+      puts "Sure thing, your name is etched in the sands of time."
+    else
+      puts "I don't understand what you put."
+      self.save_game?
     end
   end
 
-  def print_welcome_message
+  def self.play_game
+    self.new_game?
+    game = self.create
+    #create player roster
+    game.create_player_roster
+    #loop through 5 rounds
+    game.display_dashboard
+    while Game.last.rounds.length < 5
+      Round.go_through_round(game_id: game.id, event_id: Event.create.id)
+    end
+    #if you've made it this far, you lost
+    puts "You lost :("
+    game.update(win_loss: "loss")
+    self.save_game?
+    #would you like to play again? (loop)
+    self.play_game
+  end
+
+  def self.print_welcome_message
     puts ""
     puts "*****************************************************************"
     puts "                WELCOME TO FLATIRON SCHOOL"

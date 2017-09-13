@@ -1,18 +1,14 @@
+require_relative '../../concerns/actionable.rb'
 class Action < ActiveRecord::Base
   has_many :turns
   has_many :players, through: :turns
 
-  def occurs
-    change_hash = self.send(self.action_type)
-    update_points(change_hash)
-    print_changes(change_hash)
-    current_player.check_wellbeing_min
-  end
+  include Actionable
 
   def current_player
+    #private method for possible_points (via wellbeing_level)
     self.turns.last.player
   end
-
 
   def wellbeing_level
     # Private method for possible_points
@@ -28,25 +24,6 @@ class Action < ActiveRecord::Base
     (min_max[0]..min_max[1])
   end
 
-
-  def update_points(changes_hash)
-    #update points
-    changes_hash.each do |player, point_changes|
-      player_to_update = Player.find(player.to_i)
-      player_to_update.update_points(point_changes)
-    end
-  end
-
-  def print_changes(changes_hash)
-    puts ""
-    changes_hash.each do |player_id, point_changes|
-      point_changes.each do |attribute, change|
-        a = attribute.to_s.split("_").join(" ")
-        puts "#{Player.find(player_id.to_i).name} changed his/her #{a} by #{change} points."
-      end
-    end
-    puts ""
-  end
 
   def study
     #make info hash to return

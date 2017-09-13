@@ -2,9 +2,8 @@ class Turn < ActiveRecord::Base
   belongs_to :action
   belongs_to :player
 
-  def self.run_turn(hash)
-    Game.last.display_dashboard
-    Turn.create(hash)
+  def self.run_turn(player_action_id_hash)
+    Turn.create(player_action_id_hash)
     Turn.last.display_actions_to_user
     Turn.last.player.choose_action
     Turn.last.action.occurs
@@ -28,8 +27,7 @@ class Turn < ActiveRecord::Base
     puts "  -- grab_drink:   You and a Partner"
     puts "                      Soft skills gain #{min_max.first}-#{min_max.last} points."
     puts "                      Wellbeing gains 1-2 points."
+    puts ""
   end
-
-
 
 end

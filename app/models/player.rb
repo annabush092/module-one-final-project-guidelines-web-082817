@@ -11,6 +11,7 @@ class Player < ActiveRecord::Base
   end
 
   def choose_action
+    print "What would you like to do? "
     #get input from user and check if it is valid
     action_string = gets.chomp
     while !Action.instance_methods.any? {|m| m == action_string.to_sym}
