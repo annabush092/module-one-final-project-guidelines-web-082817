@@ -13,25 +13,21 @@ class Action < ActiveRecord::Base
     self.turns.last.player
   end
 
-  def possible_points
-    if current_player.wellbeing == 0
-      min_gain = 0
-      max_gain = 0
-    elsif current_player.wellbeing < 3
-      min_gain = 0
-      max_gain = 2
-    elsif current_player.wellbeing < 6
-      min_gain = 1
-      max_gain = 3
-    elsif current_player.wellbeing < 9
-      min_gain = 2
-      max_gain = 4
-    else
-      min_gain = 3
-      max_gain = 5
-    end
-    min_gain..max_gain
+
+  def wellbeing_level
+    # Private method for possible_points
+    {"none" => 1, "low" => 3, "mid" => 6, "high" => 9, "awesome" => 100}.find do |word, num|
+      current_player.wellbeing < num
+    end[0] # => appropriate word
   end
+
+  def possible_points
+    min_max={"none" => [0,0], "low" => [0,2], "mid" => [1,3], "high" => [2,4], "awesome" => [3,5]}.find do |word, min_max|
+      self.wellbeing_level == word
+    end[1] # => [min, max]
+    (min_max[0]..min_max[1])
+  end
+
 
   def update_points(changes_hash)
     #update points
@@ -62,23 +58,6 @@ class Action < ActiveRecord::Base
     }
   end
 
-  def pair_program
-    #get partner
-    partner = current_player.random_player
-    #make info hash to return
-    {current_player.id.to_s =>
-      {
-      technical_skills: rand(1..2),
-      soft_skills: rand(possible_points)
-      },
-    partner.id.to_s =>
-      {
-      technical_skills: rand(1..2),
-      soft_skills: rand(possible_points)
-      }
-    }
-  end
-
   def sleep
     #make info hash to return
     {current_player.id.to_s =>
@@ -88,21 +67,26 @@ class Action < ActiveRecord::Base
     }
   end
 
-  def grab_drink
-    #get partner
+  def partner_up(change_hash)
+    #private method for actions requiring partners
     partner = current_player.random_player
-    #make info hash to return
-    {current_player.id.to_s =>
-      {
+    {current_player.id.to_s => change_hash,
+      partner.id.to_s => change_hash}
+  end
+
+  def pair_program
+    partner_up({
+    technical_skills: rand(1..2),
+    soft_skills: rand(possible_points),
+    wellbeing: (rand(-1..0))
+    })
+  end
+
+  def grab_drink
+    partner_up({
       soft_skills: rand(possible_points),
       wellbeing: rand(1..2)
-      },
-    partner.id.to_s =>
-      {
-      soft_skills: rand(possible_points),
-      wellbeing: rand(1..2)
-      }
-    }
+      })
   end
 
 end

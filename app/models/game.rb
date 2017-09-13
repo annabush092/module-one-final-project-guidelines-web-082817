@@ -14,15 +14,14 @@ class Game < ActiveRecord::Base
     #ask user for names, and returns an array of strings
     puts "Who wants to play? Type 'x' if you've entered everyone's name"
     puts "You must have more than one player."
+    puts ""
     name_array = []
     loop do
-      puts "Enter a name: "
+      print "Enter a name: "
       input = gets.chomp
       break if input == "x" unless name_array.length < 2
       name_array << input
     end
-
-
     name_array
   end
 
@@ -45,27 +44,50 @@ class Game < ActiveRecord::Base
       puts "Wellbeing: #{player.wellbeing}"
     end
     puts "********************************************************************"
+    puts ""
   end
 
   def check_win_conditions
-    self.players.all? do |player|
+    #Game.last because otherwise we only see instances that haven't been updated
+    Game.last.players.all? do |player|
       player.technical_skills >= 10 && player.soft_skills >= 10
     end
   end
 
-  def self.play_game
+  def play_game
     #loop through rounds
-    while Game.last.round <=5
-      puts "******* ROUND #{Game.last.round} *******"
+    while self.round <=5
+      puts "******* ROUND #{self.round} *******"
       #iterate through each player's turns
-      Game.last.players.each do |player|
+      self.players.each do |player|
         Turn.run_turn({action_id: Action.create.id, player_id: player.id})
-        break if Game.last.check_win_conditions
+        break if self.check_win_conditions
       end
-      Game.last.update(round: (Game.last.round + 1))
-      break if Game.last.check_win_conditions
-      #can this be prettier?
+      self.increment!(:round, by = 1)
+      break if self.check_win_conditions
     end
+  end
+
+  def print_welcome_message
+    puts ""
+    puts "*****************************************************************"
+    puts "                WELCOME TO FLATIRON SCHOOL"
+    puts "          You worked so hard to get here! But..."
+    puts "            YOUR SKILLS ARE WOEFULLY INADEQUATE"
+    puts ""
+    puts "        In the next five rounds, you will have the"
+    puts "      opportunity to improve. However, you'll soon"
+    puts "      find that every hour spent studying yields less"
+    puts "      and less improvement. Don't forget to take care"
+    puts "      of yourself! And don't forget your new Flatiron"
+    puts "      friends. You won't get far without their help...."
+    puts ""
+    puts "      To win:"
+    puts "      EVERY player must earn 10 or more technical skill"
+    puts "      points AND soft skill points before time runs out!"
+    puts "      You have 5 rounds... GO!"
+    puts "*****************************************************************"
+    puts ""
   end
 
 end

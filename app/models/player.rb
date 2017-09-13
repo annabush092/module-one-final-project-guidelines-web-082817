@@ -31,8 +31,9 @@ class Player < ActiveRecord::Base
   end
 
   def update_points(hash)
-    hash.each do |key, value|
-      self.update(key => (self.send(key.to_s) + value))
+    hash.each do |attribute, point_change|
+      # self.update(attribute => (self.send(attribute.to_s) + point_change))
+      self.increment!(attribute, by = point_change)
     end
   end
 

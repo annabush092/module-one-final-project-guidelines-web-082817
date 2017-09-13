@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170912173055) do
+ActiveRecord::Schema.define(version: 20170913150220) do
 
   create_table "actions", force: :cascade do |t|
     t.string "action_type"
@@ -22,8 +22,8 @@ ActiveRecord::Schema.define(version: 20170912173055) do
   end
 
   create_table "games", force: :cascade do |t|
-    t.integer "community_points"
     t.integer "round"
+    t.string  "win_loss"
   end
 
   create_table "players", force: :cascade do |t|

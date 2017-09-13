@@ -22,6 +22,7 @@ class Turn < ActiveRecord::Base
     puts "  -- pair_program: You and a Partner"
     puts "                      Technical skills gain 1-2 points."
     puts "                      Soft skills gain #{min_max.first}-#{min_max.last} points."
+    puts "                      Wellbeing loses 0-1 points."
     puts "  -- sleep:        You"
     puts "                      Wellbeing gains 4-8 points."
     puts "  -- grab_drink:   You and a Partner"
