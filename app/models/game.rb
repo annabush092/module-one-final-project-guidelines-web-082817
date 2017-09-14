@@ -30,6 +30,8 @@ class Game < ActiveRecord::Base
 
   def display_dashboard
     puts ""
+    puts "******************* Round #{self.rounds.length} ******************* "
+    puts ""
     puts "*************************************************************************"
     self.players.each do |player|
       print "Name: #{player.name} ** "
@@ -74,11 +76,11 @@ class Game < ActiveRecord::Base
     #create player roster
     game.create_player_roster
     #loop through 5 rounds
-    game.display_dashboard
     while Game.last.rounds.length < 5
       Round.go_through_round(game_id: game.id, event_id: Event.create.id)
     end
     #if you've made it this far, you lost
+    Game.last.display_dashboard
     puts "You lost :("
     game.update(win_loss: "loss")
     self.save_game?

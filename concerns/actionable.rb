@@ -10,8 +10,9 @@ module Actionable
       player.check_wellbeing_min
     end
     check_win_conditions
-    Game.last.display_dashboard
     prompt_user_to_continue
+    system "clear"
+    # Game.last.display_dashboard
   end
 
   def apply_point_changes(changes_hash)
